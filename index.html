@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <h2 id="notSupported" style='color:red'>Not supported</h2>
+        this is just a test
+
+        <button id='connectButton'>Connect Now</button>
+
+        <button id='disconnectButton'>Disconnect Now</button>
+        <button id='limit'>Set Thresholds</button>
+
+    </div>
+
+
+
+    <script>
+
+        // const notSupported = document.getElementById('notSupported');
+        // notSupported.classList.toggle('hidden', 'serial' in navigator);
+
+
+        // const connect = async () => {
+
+        //     const port = await navigator.serial.requestPort()
+
+            // await port.open({ baudRate: 115200 })  // Permission issues caused by this
+            // while (port.readable) {
+        //         const textDecoder = new TextDecoderStream()
+        //         const readbleStreamClosed = port.readable.pipeTo(textDecoder.writable);
+        //         const reader = textDecoder.readable.getReader();
+        //         try {
+        //             while (true) {
+        //                 const { value, done } = await reader.read();
+        //                 if (done) {
+        //                     // Allow the serial port to be closed later.
+        //                     reader.releaseLock();
+        //                     console.log('done');
+        //                     break;
+        //                 }
+        //                 if (value) {
+        //                     console.log(value);
+        //                 }
+        //             }
+        //         } catch (error) {
+
+        //         }
+
+        //         console.log('outter loop')
+        //     }
+        // }
+
+        // const connectButton = document.getElementById('connectButton');
+
+        // connectButton.addEventListener('click', e => {
+        //     connect();
+        // })
+
+
+
+    </script>
+
+    <Script src="index.js"></Script>
+
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+
+
+</body>
+
+</html>
