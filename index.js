@@ -7,6 +7,8 @@ let outputStream;
 const connectButton = document.getElementById('connectButton');
 const disconnectButton = document.getElementById('disconnectButton')
 const limitButton = document.getElementById('limit')
+let values = [];
+let sigFox = '';
 
 
 window.addEventListener('DOMContentLoaded', e => {
@@ -19,12 +21,12 @@ connectButton.addEventListener('click', e => {
     clickConnect();
 });
 
-disconnectButton.addEventListener('click',e=>{
+disconnectButton.addEventListener('click', e => {
     disconnect();
 })
 
-limitButton.addEventListener('click',e=>{
-    writeToStream('tht 10 30', 'thh 20 35')
+limitButton.addEventListener('click', e => {
+    writeToStream('cfg');
 })
 
 
@@ -47,8 +49,9 @@ const connect = async () => {
     outputDone = encoder.readable.pipeTo(port.writable);
     outputStream = encoder.writable;
 
+    writeToStream('cfg');
+    await readOne();
 
-    readLoop();
     //writeToStream('\x03', 'echo(false);');
 }
 
@@ -70,6 +73,7 @@ const disconnect = async () => {
 
     await port.close();
     port = null;
+    console.log(values)
 
 }
 
@@ -79,10 +83,12 @@ const clickConnect = async () => {
 
 const readLoop = async () => {
 
+
     while (true) {
         const { value, done } = await reader.read();
         if (value) {
             console.log(value);
+
         }
         if (done) {
             console.log('[readLoop] DONE', done);
@@ -91,6 +97,57 @@ const readLoop = async () => {
             break;
         }
     }
+}
+
+const readOne = async () => {
+
+    for (let i = 0; i < 20; i++) {
+        const { value, done } = await reader.read();
+        if (value) {
+            sigFox += value;
+            // console.log(value);
+        }
+    }
+
+    console.log(sigFox);
+    extractStringData(sigFox)
+
+}
+
+function findTextInBuffer(textList,textToFind) {
+    let wordArrayPosition = 0;
+    textList.some((el, idx) => {
+        let innerIndex = el.indexOf(textToFind);
+        if (innerIndex !== -1) {
+            wordArrayPosition = idx;
+            return;
+        }
+
+
+    })
+    return wordArrayPosition
+}
+
+function extractStringData(text) {
+    let textList = text.split(':')
+    let textToFind = 'SigFox ID'
+    let sigFoxIDIndex = findTextInBuffer(textList,textToFind);
+    const sigFoxIdLine = textList[sigFoxIDIndex + 1];
+    const sigFoxIdEncrypted = sigFoxIdLine.split(/\r?\n/)[0]
+
+    textToFind = 'SigFox PAC';
+    let sigFoxPACIndex = findTextInBuffer(textList,textToFind);
+    const sigFoxPACLine = textList[sigFoxPACIndex + 1];
+    const sigFoxPACEncrypted = sigFoxPACLine.split(/\r?\n/)[0]
+
+    // textList.forEach(el=>{
+    //    if('SigFox ID' in el){
+    //        console.log('found ID')
+    //    }
+    // })
+    console.log(textList);
+    console.log(`ID ${sigFoxIdEncrypted} PAC ${sigFoxPACEncrypted}`);
+    // console.log(textList[0].split(/\r?\n/));
 }
 
 const writeToStream = (...lines) => {
@@ -102,14 +159,15 @@ const writeToStream = (...lines) => {
     writer.releaseLock();
 }
 
-const setThresholds = ()=>{
-    let lines =[];
+const setThresholds = () => {
+    let lines = [];
 
     //set temperature threshold
-    lines.push(`tht 10 30`)
+    // lines.push(`tht 10 30`)
 
     //set Humidity Threshold
-    lines.push('thh 20 35')
+    // lines.push('thh 20 35')
+    lines.push('cfg')
 }
 
 
